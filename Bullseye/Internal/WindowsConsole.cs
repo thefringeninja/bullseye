@@ -6,7 +6,7 @@ namespace Bullseye.Internal
 
     public static class WindowsConsole
     {
-        internal static async Task TryEnableVirtualTerminalProcessing(TextWriter @out, bool verbose)
+        internal static async Task TryEnableVirtualTerminalProcessing(TextWriter writer, bool verbose)
         {
             const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004;
 
@@ -19,7 +19,7 @@ namespace Bullseye.Internal
             {
                 if (verbose)
                 {
-                    await @out.WriteLineAsync(
+                    await writer.WriteLineAsync(
                         $"Bullseye: Failed to get a handle to the standard output device (GetStdHandle). Error code: {lastError}").Tax();
                 }
 
@@ -28,14 +28,14 @@ namespace Bullseye.Internal
 
             if (verbose)
             {
-                await @out.WriteLineAsync($"Bullseye: Got a handle to the standard output device (GetStdHandle): {consoleHandle}").Tax();
+                await writer.WriteLineAsync($"Bullseye: Got a handle to the standard output device (GetStdHandle): {consoleHandle}").Tax();
             }
 
             if (!NativeMethods.GetConsoleMode(consoleHandle, out var consoleMode))
             {
                 if (verbose)
                 {
-                    await @out.WriteLineAsync(
+                    await writer.WriteLineAsync(
                         $"Bullseye: Failed to get the current output mode of the console screen buffer (GetConsoleMode). Error code: {Marshal.GetLastWin32Error()}").Tax();
                 }
 
@@ -44,7 +44,7 @@ namespace Bullseye.Internal
 
             if (verbose)
             {
-                await @out.WriteLineAsync($"Bullseye: Got the current output mode of the console screen buffer (GetConsoleMode): {consoleMode}").Tax();
+                await writer.WriteLineAsync($"Bullseye: Got the current output mode of the console screen buffer (GetConsoleMode): {consoleMode}").Tax();
             }
 
             consoleMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
@@ -53,14 +53,14 @@ namespace Bullseye.Internal
             {
                 if (verbose)
                 {
-                    await @out.WriteLineAsync(
+                    await writer.WriteLineAsync(
                        $"Bullseye: Failed to set the output mode of the console screen buffer (SetConsoleMode). Error code: {Marshal.GetLastWin32Error()}").Tax();
                 }
             }
 
             if (verbose)
             {
-                await @out.WriteLineAsync($"Bullseye: Set the current output mode of the console screen buffer (SetConsoleMode): {consoleMode}").Tax();
+                await writer.WriteLineAsync($"Bullseye: Set the current output mode of the console screen buffer (SetConsoleMode): {consoleMode}").Tax();
             }
         }
     }
